@@ -8,14 +8,19 @@ ABasePlayer::ABasePlayer()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	Capsule = CreateDefaultSubobject<UCapsuleComponent>("Capsule");
 	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>("Mesh");
+	SkeletalMesh->SetupAttachment(Capsule);
+	Capsule->SetGenerateOverlapEvents(true);
+	Capsule->SetCollisionProfileName("OverlapAll");
+	Capsule->OnComponentBeginOverlap.AddDynamic(this,&ABasePlayer::OnOverlapBegin);
+	Capsule->OnComponentEndOverlap.AddDynamic(this,&ABasePlayer::OnOverlapEnd);
 }
 
 // Called when the game starts or when spawned
 void ABasePlayer::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
@@ -30,10 +35,37 @@ void ABasePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	PlayerInputComponent->BindAxis("MoveLeftRight", this, &ABasePlayer::MoveLeftRight);
+	if (GEngine != 0) {
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Inputs Registered"));
+	}
 }
 
 void ABasePlayer::MoveLeftRight(float scale) {
-	FVector moveVector = FVector(0, 1, 0) * scale * 5;
-	SkeletalMesh->AddLocalOffset(moveVector);
+	if (shouldMove) {
+		FVector moveVector = FVector(0, 1, 0) * scale * 5;
+		Capsule->AddLocalOffset(moveVector);
+	}
+}
+
+void ABasePlayer::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp,
+	class AActor* OtherActor,
+	class UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult& SweepResult) {
+	shouldMove = false;
+	if (GEngine!=0) {
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Overlap Begin"));
+	}
+}
+
+void ABasePlayer::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp,
+	class AActor* OtherActor,
+	class UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex) {
+	//shouldMove = true;
+	if (GEngine != 0) {
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Overlap Begin"));
+	}
 }
 
