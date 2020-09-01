@@ -12,7 +12,6 @@ ABasePlayer::ABasePlayer()
 	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>("Mesh");
 	SkeletalMesh->SetupAttachment(Capsule);
 	Capsule->SetGenerateOverlapEvents(true);
-	Capsule->SetCollisionProfileName("OverlapAll");
 	Capsule->OnComponentBeginOverlap.AddDynamic(this,&ABasePlayer::OnOverlapBegin);
 	Capsule->OnComponentEndOverlap.AddDynamic(this,&ABasePlayer::OnOverlapEnd);
 }
@@ -63,9 +62,9 @@ void ABasePlayer::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp,
 	class AActor* OtherActor,
 	class UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex) {
-	//shouldMove = true;
+	shouldMove = true;
 	if (GEngine != 0) {
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Overlap Begin"));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Overlap End"));
 	}
 }
 
