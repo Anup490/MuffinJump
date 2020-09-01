@@ -34,13 +34,11 @@ void ABasePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	PlayerInputComponent->BindAxis("MoveLeftRight", this, &ABasePlayer::MoveLeftRight);
-	if (GEngine != 0) {
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Inputs Registered"));
-	}
 }
 
-void ABasePlayer::MoveLeftRight(float scale) {
-	if (shouldMove) {
+void ABasePlayer::MoveLeftRight(float scale) 
+{
+	if (((scale > 0) && (bShouldMoveRight)) || ((scale < 0) && (bShouldMoveLeft)))  {
 		FVector moveVector = FVector(0, 1, 0) * scale * 5;
 		Capsule->AddLocalOffset(moveVector);
 	}
@@ -51,20 +49,28 @@ void ABasePlayer::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp,
 	class UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex,
 	bool bFromSweep,
-	const FHitResult& SweepResult) {
-	shouldMove = false;
-	if (GEngine!=0) {
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Overlap Begin"));
+	const FHitResult& SweepResult) 
+{
+	float fBlockY = OtherActor->GetActorLocation().Y;
+	float fPawnY = GetActorLocation().Y;
+	if (fBlockY > fPawnY) {
+		bShouldMoveRight = false;
 	}
+	else if (fBlockY < fPawnY) {
+		bShouldMoveLeft = false;
+	}
+	/*
+	UE_LOG(LogTemp, Warning, TEXT("Overlapped"), fPawnY);
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Overlapped"));
+	*/
 }
 
 void ABasePlayer::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp,
 	class AActor* OtherActor,
 	class UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex) {
-	shouldMove = true;
-	if (GEngine != 0) {
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Overlap End"));
-	}
+	int32 OtherBodyIndex) 
+{
+	bShouldMoveRight = true;
+	bShouldMoveLeft = true;
 }
 

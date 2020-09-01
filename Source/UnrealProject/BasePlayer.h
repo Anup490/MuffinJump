@@ -22,7 +22,8 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	bool shouldMove = true;
+	bool bShouldMoveLeft = true;
+	bool bShouldMoveRight = true;
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	UCapsuleComponent* Capsule;
