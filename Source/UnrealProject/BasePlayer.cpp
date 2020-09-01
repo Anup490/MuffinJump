@@ -14,6 +14,7 @@ ABasePlayer::ABasePlayer()
 	Capsule->SetGenerateOverlapEvents(true);
 	Capsule->OnComponentBeginOverlap.AddDynamic(this,&ABasePlayer::OnOverlapBegin);
 	Capsule->OnComponentEndOverlap.AddDynamic(this,&ABasePlayer::OnOverlapEnd);
+	Capsule->SetSimulatePhysics(true);
 }
 
 // Called when the game starts or when spawned
@@ -26,7 +27,6 @@ void ABasePlayer::BeginPlay()
 void ABasePlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input
@@ -34,13 +34,14 @@ void ABasePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	PlayerInputComponent->BindAxis("MoveLeftRight", this, &ABasePlayer::MoveLeftRight);
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ABasePlayer::Jump);
 }
 
 void ABasePlayer::MoveLeftRight(float scale) 
 {
 	if (((scale > 0) && (bShouldMoveRight)) || ((scale < 0) && (bShouldMoveLeft)))  {
-		FVector moveVector = FVector(0, 1, 0) * scale * 5;
-		Capsule->AddLocalOffset(moveVector);
+		FVector MoveVector = FVector(0, 1, 0) * scale * 5;
+		Capsule->AddLocalOffset(MoveVector);
 	}
 }
 
@@ -72,5 +73,10 @@ void ABasePlayer::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp,
 {
 	bShouldMoveRight = true;
 	bShouldMoveLeft = true;
+}
+
+void ABasePlayer::Jump() {
+	FVector JumpVector = FVector(0, 0, 1) * iJumpMultiplier;
+	Capsule->AddImpulse(JumpVector);
 }
 

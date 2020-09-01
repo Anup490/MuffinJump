@@ -13,6 +13,8 @@ class UNREALPROJECT_API ABasePlayer : public APawn
 {
 	GENERATED_BODY()
 
+	const int iMovementMultiplier = 5;
+	const int iJumpMultiplier = 60000;
 public:
 	// Sets default values for this pawn's properties
 	ABasePlayer();
@@ -52,5 +54,5 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void MoveLeftRight(float scale);
-
+	void Jump();
 };
