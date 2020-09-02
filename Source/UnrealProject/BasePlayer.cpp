@@ -21,6 +21,7 @@ ABasePlayer::ABasePlayer()
 void ABasePlayer::BeginPlay()
 {
 	Super::BeginPlay();
+	UUnrealGameInstance::SaveBasePlayer(this);
 }
 
 // Called every frame

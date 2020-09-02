@@ -23,6 +23,15 @@ void ABaseCamera::BeginPlay()
 void ABaseCamera::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	AActor* pBasePlayer = UUnrealGameInstance::GetBasePlayer();
+	if (pBasePlayer != nullptr) {
+		float fPawnZ = pBasePlayer->GetActorLocation().Z;
+		float fCameraZ = GetActorLocation().Z;
+		FVector CameraVector = FVector(0, 0, 1) * (fPawnZ - fCameraZ);
+		AddActorLocalOffset(CameraVector);
+	}
+	else {
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BasePlayer NOT found"));
+	}
 }
 

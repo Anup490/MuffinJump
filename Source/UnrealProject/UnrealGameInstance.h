@@ -3,7 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Engine/GameInstance.h"
+#include "GameFramework/Pawn.h"
+
 #include "UnrealGameInstance.generated.h"
 
 /**
@@ -13,5 +14,10 @@ UCLASS()
 class UNREALPROJECT_API UUnrealGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
-	
+
+	static APawn* pPawn;
+
+public:
+	static void SaveBasePlayer(APawn* pBasePlayer);
+	static APawn* GetBasePlayer();
 };

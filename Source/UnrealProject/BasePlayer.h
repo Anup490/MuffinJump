@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "Components/CapsuleComponent.h"
+#include "UnrealGameInstance.h"
 
 #include "BasePlayer.generated.h"
 

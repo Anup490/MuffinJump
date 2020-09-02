@@ -7,6 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "Engine/LocalPlayer.h"
 #include "Kismet/GameplayStatics.h"
+#include "UnrealGameInstance.h"
 
 #include "BaseCamera.generated.h"
 
