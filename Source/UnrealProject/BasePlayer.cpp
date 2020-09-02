@@ -41,12 +41,13 @@ void ABasePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 void ABasePlayer::MoveLeftRight(float scale) 
 {
 	if (((scale > 0) && (bShouldMoveRight)) || ((scale < 0) && (bShouldMoveLeft)))  {
-		FVector MoveVector = FVector(0, 1, 0) * scale * 5;
+		FVector MoveVector = FVector(0, 1, 0) * scale * MOVEMENT_MULTIPLIER;
 		Capsule->AddLocalOffset(MoveVector);
 	}
 }
 
-void ABasePlayer::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp,
+void ABasePlayer::OnOverlapBegin(
+	class UPrimitiveComponent* OverlappedComp,
 	class AActor* OtherActor,
 	class UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex,
@@ -67,7 +68,8 @@ void ABasePlayer::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp,
 	*/
 }
 
-void ABasePlayer::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp,
+void ABasePlayer::OnOverlapEnd(
+	class UPrimitiveComponent* OverlappedComp,
 	class AActor* OtherActor,
 	class UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex) 
@@ -77,7 +79,7 @@ void ABasePlayer::OnOverlapEnd(class UPrimitiveComponent* OverlappedComp,
 }
 
 void ABasePlayer::Jump() {
-	FVector JumpVector = FVector(0, 0, 1) * iJumpMultiplier;
+	FVector JumpVector = FVector(0, 0, 1) * JUMP_MULTIPLIER;
 	Capsule->AddImpulse(JumpVector);
 }
 

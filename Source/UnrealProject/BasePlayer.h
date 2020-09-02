@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "Components/CapsuleComponent.h"
 #include "UnrealGameInstance.h"
+#include "Constants.h"
 
 #include "BasePlayer.generated.h"
 
@@ -14,8 +15,6 @@ class UNREALPROJECT_API ABasePlayer : public APawn
 {
 	GENERATED_BODY()
 
-	const int iMovementMultiplier = 5;
-	const int iJumpMultiplier = 60000;
 public:
 	// Sets default values for this pawn's properties
 	ABasePlayer();
@@ -35,18 +34,22 @@ public:
 	USkeletalMeshComponent* SkeletalMesh;
 
 	UFUNCTION()
-	void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp,
+	void OnOverlapBegin(
+		class UPrimitiveComponent* OverlappedComp,
 		class AActor* OtherActor,
 		class UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex,
 		bool bFromSweep,
-		const FHitResult& SweepResult);
+		const FHitResult& SweepResult
+	);
 
 	UFUNCTION()
-	void OnOverlapEnd(class UPrimitiveComponent* OverlappedComp,
+	void OnOverlapEnd(
+		class UPrimitiveComponent* OverlappedComp,
 		class AActor* OtherActor,
 		class UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex);
+		int32 OtherBodyIndex
+	);
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
