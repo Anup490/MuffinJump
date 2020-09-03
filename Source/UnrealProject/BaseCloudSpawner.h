@@ -7,6 +7,7 @@
 #include "Components/BoxComponent.h"
 #include "BaseCloud.h"
 #include "BasePlayer.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "BaseCloudSpawner.generated.h"
 
 UCLASS()
@@ -15,8 +16,8 @@ class UNREALPROJECT_API ABaseCloudSpawner : public AActor
 	GENERATED_BODY()
 
 	void Spawn(UClass* pClazz);
+	float GetRandomY();
 	void MoveUpwards();
-
 public:	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	USceneComponent* Root;

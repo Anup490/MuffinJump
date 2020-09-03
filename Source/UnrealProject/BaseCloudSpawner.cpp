@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "BaseCloudSpawner.h"
 
 // Sets default values
@@ -23,18 +22,13 @@ void ABaseCloudSpawner::BeginPlay()
 void ABaseCloudSpawner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void ABaseCloudSpawner::SpawnCloudOnPlayerOverlap(UClass* pClazz, AActor* Pawn) {
-	if (GEngine!=nullptr) {
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Overlapped with Trigger Area"));
-	}
 	if (Cast<ABasePlayer>(Pawn) != nullptr) {
 		SpawnCloud(pClazz);
 	}
 }
-
 
 void ABaseCloudSpawner::SpawnCloud(UClass* pClazz) {
 	for (int i = 0; i < NUMBER_OF_CLOUDS_TO_SPAWN; i++) {
@@ -44,10 +38,17 @@ void ABaseCloudSpawner::SpawnCloud(UClass* pClazz) {
 
 void ABaseCloudSpawner::Spawn(UClass* pClazz) {
 	FVector LocationVector = SpawnBox->GetComponentLocation();
+	LocationVector.Y = GetRandomY();
 	FRotator RotationVector(0.0f, 0.0f, 0.0f);
 	FActorSpawnParameters SpawnInfo;
 	GetWorld()->SpawnActor<ABaseCloud>(pClazz, LocationVector, RotationVector, SpawnInfo);
 	MoveUpwards();
+}
+
+float ABaseCloudSpawner::GetRandomY() {
+	FBoxSphereBounds SpawnBoxBounds = SpawnBox->Bounds;
+	FVector RandomVector = UKismetMathLibrary::RandomPointInBoundingBox(SpawnBoxBounds.Origin, SpawnBoxBounds.BoxExtent);
+	return RandomVector.Y;
 }
 
 void ABaseCloudSpawner::MoveUpwards() {
