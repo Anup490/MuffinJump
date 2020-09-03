@@ -26,10 +26,32 @@ void ABaseCloudSpawner::Tick(float DeltaTime)
 
 }
 
+void ABaseCloudSpawner::SpawnCloudOnPlayerOverlap(UClass* pClazz, AActor* Pawn) {
+	if (GEngine!=nullptr) {
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Overlapped with Trigger Area"));
+	}
+	if (Cast<ABasePlayer>(Pawn) != nullptr) {
+		SpawnCloud(pClazz);
+	}
+}
+
+
 void ABaseCloudSpawner::SpawnCloud(UClass* pClazz) {
-	FVector SpawnerLocationVector = GetActorLocation();
+	for (int i = 0; i < NUMBER_OF_CLOUDS_TO_SPAWN; i++) {
+		Spawn(pClazz);
+	}
+}
+
+void ABaseCloudSpawner::Spawn(UClass* pClazz) {
+	FVector LocationVector = SpawnBox->GetComponentLocation();
 	FRotator RotationVector(0.0f, 0.0f, 0.0f);
 	FActorSpawnParameters SpawnInfo;
-	GetWorld()->SpawnActor<ABaseCloud>(pClazz,SpawnerLocationVector, RotationVector, SpawnInfo);
+	GetWorld()->SpawnActor<ABaseCloud>(pClazz, LocationVector, RotationVector, SpawnInfo);
+	MoveUpwards();
+}
+
+void ABaseCloudSpawner::MoveUpwards() {
+	FVector NewLocationVector = FVector(0, 0, 1) * CLOUD_SPAWNER_OFFSET;
+	Root->AddLocalOffset(NewLocationVector);
 }
 

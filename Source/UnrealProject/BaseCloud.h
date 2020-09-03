@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Components/BoxComponent.h"
 #include "Constants.h"
-
+#include "BasePlayer.h"
 #include "BaseCloud.generated.h"
 
 UCLASS()

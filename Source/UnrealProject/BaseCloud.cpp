@@ -35,11 +35,13 @@ void ABaseCloud::onOverlapBegin(
 	bool bFromSweep,
 	const FHitResult& SweepResult
 ) {
-	float PawnZ = OtherActor->GetActorLocation().Z;
-	float CloudZ = GetActorLocation().Z;
-	FVector JumpVector;
-	JumpVector = FVector(0, 0, 1) * JUMP_MULTIPLIER * ((PawnZ > CloudZ)?2:1);
-	OtherComp->AddImpulse(JumpVector);
-	Destroy();
+	if (Cast<ABasePlayer>(OtherActor) != nullptr) {
+		float PawnZ = OtherActor->GetActorLocation().Z;
+		float CloudZ = GetActorLocation().Z;
+		FVector JumpVector;
+		JumpVector = FVector(0, 0, 1) * JUMP_MULTIPLIER * ((PawnZ > CloudZ) ? 2 : 1);
+		OtherComp->AddImpulse(JumpVector);
+		Destroy();
+	}
 }
 

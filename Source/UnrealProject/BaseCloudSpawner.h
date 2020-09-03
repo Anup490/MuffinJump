@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Components/BoxComponent.h"
 #include "BaseCloud.h"
+#include "BasePlayer.h"
 #include "BaseCloudSpawner.generated.h"
 
 UCLASS()
@@ -13,7 +14,8 @@ class UNREALPROJECT_API ABaseCloudSpawner : public AActor
 {
 	GENERATED_BODY()
 
-
+	void Spawn(UClass* pClazz);
+	void MoveUpwards();
 
 public:	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -29,6 +31,9 @@ public:
 	ABaseCloudSpawner();
 
 protected:
+
+	UFUNCTION(BlueprintCallable)
+	void SpawnCloudOnPlayerOverlap(UClass* pClazz, AActor* Actor);
 
 	UFUNCTION(BlueprintCallable)
 	void SpawnCloud(UClass* pClazz);
