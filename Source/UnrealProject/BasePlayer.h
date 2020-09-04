@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "GameFramework/FloatingPawnMovement.h"
 #include "Components/CapsuleComponent.h"
 #include "UnrealGameInstance.h"
 #include "Constants.h"
@@ -15,6 +16,9 @@ class UNREALPROJECT_API ABasePlayer : public APawn
 {
 	GENERATED_BODY()
 
+	int iTimerJump = 0;
+	bool bShouldJump = true;
+	FTimerHandle JumpTimerHandle;
 public:
 	// Sets default values for this pawn's properties
 	ABasePlayer();
@@ -24,32 +28,14 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	bool bShouldMoveLeft = true;
-	bool bShouldMoveRight = true;
-
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	UCapsuleComponent* Capsule;
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	USkeletalMeshComponent* SkeletalMesh;
 
-	UFUNCTION()
-	void OnOverlapBegin(
-		class UPrimitiveComponent* OverlappedComp,
-		class AActor* OtherActor,
-		class UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex,
-		bool bFromSweep,
-		const FHitResult& SweepResult
-	);
-
-	UFUNCTION()
-	void OnOverlapEnd(
-		class UPrimitiveComponent* OverlappedComp,
-		class AActor* OtherActor,
-		class UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex
-	);
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UFloatingPawnMovement* PawnMovement;
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -59,4 +45,5 @@ public:
 
 	void MoveLeftRight(float scale);
 	void Jump();
+	void DisableJump();
 };

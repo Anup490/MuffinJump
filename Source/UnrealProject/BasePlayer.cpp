@@ -1,6 +1,4 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "BasePlayer.h"
 
 // Sets default values
@@ -10,10 +8,8 @@ ABasePlayer::ABasePlayer()
 	PrimaryActorTick.bCanEverTick = true;
 	Capsule = CreateDefaultSubobject<UCapsuleComponent>("Capsule");
 	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>("Mesh");
+	PawnMovement = CreateDefaultSubobject<UFloatingPawnMovement>("Pawn Movement");
 	SkeletalMesh->SetupAttachment(Capsule);
-	Capsule->SetGenerateOverlapEvents(true);
-	Capsule->OnComponentBeginOverlap.AddDynamic(this,&ABasePlayer::OnOverlapBegin);
-	Capsule->OnComponentEndOverlap.AddDynamic(this,&ABasePlayer::OnOverlapEnd);
 	Capsule->SetSimulatePhysics(true);
 }
 
@@ -38,48 +34,27 @@ void ABasePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ABasePlayer::Jump);
 }
 
-void ABasePlayer::MoveLeftRight(float scale) 
+void ABasePlayer::MoveLeftRight(float scale)
 {
-	if (((scale > 0) && (bShouldMoveRight)) || ((scale < 0) && (bShouldMoveLeft)))  {
-		FVector MoveVector = FVector(0, 1, 0) * scale * MOVEMENT_MULTIPLIER;
-		Capsule->AddLocalOffset(MoveVector);
+	FVector MovementVector(0, MOVEMENT_MULTIPLIER, 0);
+	AddMovementInput(MovementVector, scale, false);
+}
+
+void ABasePlayer::Jump() 
+{
+	if (bShouldJump) {
+		FVector JumpVector = FVector(0, 0, 1) * JUMP_MULTIPLIER;
+		Capsule->AddImpulse(JumpVector);
+		bShouldJump = false;
+		GetWorldTimerManager().SetTimer(JumpTimerHandle, this, &ABasePlayer::DisableJump, 1.0f, true, 0.1f);
 	}
 }
 
-void ABasePlayer::OnOverlapBegin(
-	class UPrimitiveComponent* OverlappedComp,
-	class AActor* OtherActor,
-	class UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex,
-	bool bFromSweep,
-	const FHitResult& SweepResult) 
-{
-	float fBlockY = OtherActor->GetActorLocation().Y;
-	float fPawnY = GetActorLocation().Y;
-	if (fBlockY > fPawnY) {
-		bShouldMoveRight = false;
+void ABasePlayer::DisableJump() {
+	iTimerJump++;
+	if (iTimerJump > JUMP_TIMER) {
+		iTimerJump = 0;
+		bShouldJump = true;
+		GetWorldTimerManager().ClearTimer(JumpTimerHandle);
 	}
-	else if (fBlockY < fPawnY) {
-		bShouldMoveLeft = false;
-	}
-	/*
-	UE_LOG(LogTemp, Warning, TEXT("Overlapped"), fPawnY);
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Overlapped"));
-	*/
 }
-
-void ABasePlayer::OnOverlapEnd(
-	class UPrimitiveComponent* OverlappedComp,
-	class AActor* OtherActor,
-	class UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex) 
-{
-	bShouldMoveRight = true;
-	bShouldMoveLeft = true;
-}
-
-void ABasePlayer::Jump() {
-	FVector JumpVector = FVector(0, 0, 1) * JUMP_MULTIPLIER;
-	Capsule->AddImpulse(JumpVector);
-}
-
