@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Pawn.h"
+#include "GameFramework/Character.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "Components/CapsuleComponent.h"
 #include "UnrealGameInstance.h"
@@ -12,13 +12,10 @@
 #include "BasePlayer.generated.h"
 
 UCLASS()
-class UNREALPROJECT_API ABasePlayer : public APawn
+class UNREALPROJECT_API ABasePlayer : public ACharacter
 {
 	GENERATED_BODY()
 
-	int iTimerJump = 0;
-	bool bShouldJump = true;
-	FTimerHandle JumpTimerHandle;
 public:
 	// Sets default values for this pawn's properties
 	ABasePlayer();
@@ -28,14 +25,6 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
-	UCapsuleComponent* Capsule;
-
-	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
-	USkeletalMeshComponent* SkeletalMesh;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UFloatingPawnMovement* PawnMovement;
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -45,5 +34,4 @@ public:
 
 	void MoveLeftRight(float scale);
 	void Jump();
-	void DisableJump();
 };
