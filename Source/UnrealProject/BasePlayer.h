@@ -17,6 +17,7 @@ class UNREALPROJECT_API ABasePlayer : public ACharacter
 {
 	GENERATED_BODY()
 
+	bool bIsFirstInput;
 	int iOldScale;
 	FRotator Rotation;
 	APlayerController* PlayerController;
