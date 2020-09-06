@@ -52,16 +52,12 @@ void ABasePlayer::Jump()
 void ABasePlayer::RotatePlayer(int iScale) {
 	if (iOldScale != iScale) {
 		iOldScale = iScale;
+		int iRotationDegree = 180;
 		if (bIsFirstInput) {
-			if (iScale > 0) {
-				PlayerController->SetControlRotation(AddRotation(FRotator(0, 180 * iScale, 0)));
-			}
-			else {
-				PlayerController->SetControlRotation(AddRotation(FRotator(0, 360 * iScale, 0)));
-			}
+			iRotationDegree = (iScale > 0) ? 360 : 180;
 			bIsFirstInput = false;
 		}
-		PlayerController->SetControlRotation(AddRotation(FRotator(0, 180 * iScale, 0)));
+		PlayerController->SetControlRotation(AddRotation(FRotator(0, iRotationDegree * iScale, 0)));
 	}
 }
 
