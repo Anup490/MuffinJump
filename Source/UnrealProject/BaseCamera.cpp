@@ -30,8 +30,5 @@ void ABaseCamera::Tick(float DeltaTime)
 		FVector CameraVector = FVector(0, 0, 1) * (fPawnZ - fCameraZ);
 		AddActorLocalOffset(CameraVector);
 	}
-	else {
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BasePlayer NOT found"));
-	}
 }
 

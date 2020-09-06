@@ -8,6 +8,7 @@
 #include "Components/CapsuleComponent.h"
 #include "UnrealGameInstance.h"
 #include "Constants.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "BasePlayer.generated.h"
 
@@ -16,6 +17,11 @@ class UNREALPROJECT_API ABasePlayer : public ACharacter
 {
 	GENERATED_BODY()
 
+	bool bIsFirstInput;
+	int iOldScale;
+	FRotator Rotation;
+
+	FRotator AddRotation(FRotator&& RotationOffset);
 public:
 	// Sets default values for this pawn's properties
 	ABasePlayer();
