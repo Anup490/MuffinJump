@@ -20,7 +20,9 @@ class UNREALPROJECT_API ABasePlayer : public ACharacter
 	bool bIsFirstInput;
 	int iOldScale;
 	FRotator Rotation;
+	APlayerController* PlayerController;
 
+	void RotatePlayer(int iScale);
 	FRotator AddRotation(FRotator&& RotationOffset);
 public:
 	// Sets default values for this pawn's properties

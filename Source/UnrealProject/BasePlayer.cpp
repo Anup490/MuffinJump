@@ -9,6 +9,7 @@ ABasePlayer::ABasePlayer()
 	bIsFirstInput = false;
 	iOldScale = 0;
 	Rotation = FRotator(0, 0, 0);
+	PlayerController = UGameplayStatics::GetPlayerController(this, 0);
 }
 
 // Called when the game starts or when spawned
@@ -34,36 +35,29 @@ void ABasePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void ABasePlayer::MoveLeftRight(float scale)
 {
-	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
 	int iScale = (int)scale;
 	if (iScale != 0) {
-		if (bIsFirstInput) {
-			if (iScale > 0) {
-				PlayerController->SetControlRotation(AddRotation(FRotator(0, -90, 0)));
-			}
-			else {
-				PlayerController->SetControlRotation(AddRotation(FRotator(0, 90, 0)));
-			}
-			bIsFirstInput = false;
-		}
-		else if((iScale != 0) && (iOldScale != iScale)){
-			if (iScale > 0) {
-				PlayerController->SetControlRotation(AddRotation(FRotator(0, -180, 0)));
-			}
-			else {
-				PlayerController->SetControlRotation(AddRotation(FRotator(0, 180, 0)));
-			}
-		}
+		RotatePlayer(iScale);
 		FVector MovementVector(0, MOVEMENT_MULTIPLIER, 0);
 		AddMovementInput(MovementVector, scale, false);
 	}
-	iOldScale = iScale;
 }
 
 void ABasePlayer::Jump() 
 {
 	FVector JumpVector(0, 0, JUMP_MULTIPLIER);
 	LaunchCharacter(JumpVector,false,true);
+}
+
+void ABasePlayer::RotatePlayer(int iScale) {
+	if (iOldScale != iScale) {
+		iOldScale = iScale;
+		int iRotationDegree = (bIsFirstInput) ? 90 : 180;
+		PlayerController->SetControlRotation(AddRotation(FRotator(0, iRotationDegree * iScale, 0)));
+		if (bIsFirstInput) {
+			bIsFirstInput = false;
+		}
+	}
 }
 
 FRotator ABasePlayer::AddRotation(FRotator&& RotationOffset) {
