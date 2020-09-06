@@ -6,7 +6,6 @@ ABasePlayer::ABasePlayer()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	bIsFirstInput = false;
 	iOldScale = 0;
 	Rotation = FRotator(0, 0, 0);
 	PlayerController = UGameplayStatics::GetPlayerController(this, 0);
@@ -52,11 +51,7 @@ void ABasePlayer::Jump()
 void ABasePlayer::RotatePlayer(int iScale) {
 	if (iOldScale != iScale) {
 		iOldScale = iScale;
-		int iRotationDegree = (bIsFirstInput) ? 90 : 180;
-		PlayerController->SetControlRotation(AddRotation(FRotator(0, iRotationDegree * iScale, 0)));
-		if (bIsFirstInput) {
-			bIsFirstInput = false;
-		}
+		PlayerController->SetControlRotation(AddRotation(FRotator(0, 180 * iScale * -1, 0)));
 	}
 }
 
