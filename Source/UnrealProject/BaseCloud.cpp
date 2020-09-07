@@ -35,7 +35,7 @@ void ABaseCloud::onOverlapBegin(
 	bool bFromSweep,
 	const FHitResult& SweepResult
 ) {
-	ABasePlayer* Player = Cast<ABasePlayer>(OtherActor);
+	ACharacter* Player = Cast<ACharacter>(OtherActor);
 	if (Player != nullptr) {
 		FVector JumpVector(0, 0, JUMP_MULTIPLIER);
 		Player->LaunchCharacter(JumpVector, false, true);;

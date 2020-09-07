@@ -4,9 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameFramework/Character.h"
 #include "Components/BoxComponent.h"
 #include "Constants.h"
-#include "BasePlayer.h"
 #include "BaseCloud.generated.h"
 
 UCLASS()

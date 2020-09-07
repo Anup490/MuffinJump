@@ -7,6 +7,8 @@ ABasePlayer::ABasePlayer()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	ParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>("Particle System");
+	bEnableControl = true;
+	bIsMortal = false;
 	bWasFalling = false;
 	bIsFirstInput = true;
 	iOldScale = 0;
@@ -19,6 +21,7 @@ void ABasePlayer::BeginPlay()
 {
 	Super::BeginPlay();
 	UUnrealGameInstance::SaveBasePlayer(this);
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ABasePlayer::onOverlapBegin);
 }
 
 // Called every frame
@@ -27,7 +30,6 @@ void ABasePlayer::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	GlowFireOnJump();
 	AttachFireToMuffin();
-
 	if ((GetVelocity().Z) < 0) {
 		bWasFalling = (GetVelocity().Z) < 0;
 	}
@@ -43,26 +45,31 @@ void ABasePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void ABasePlayer::MoveLeftRight(float scale)
 {
-	int iScale = (int)scale;
-	if (iScale != 0) {
-		RotatePlayer(iScale);
-		FVector MovementVector(0, MOVEMENT_MULTIPLIER, 0);
-		AddMovementInput(MovementVector, scale, false);
+	if (bEnableControl) {
+		int iScale = (int)scale;
+		if (iScale != 0) {
+			RotatePlayer(iScale);
+			FVector MovementVector(0, MOVEMENT_MULTIPLIER, 0);
+			AddMovementInput(MovementVector, scale, false);
+		}
 	}
 }
 
 void ABasePlayer::Jump() 
 {
-	FVector JumpVector(0, 0, JUMP_MULTIPLIER);
-	LaunchCharacter(JumpVector,false,true);
-	ParticleSystem->Activate();
-
-	bWasFalling = false;
+	if (bEnableControl) {
+		FVector JumpVector(0, 0, JUMP_MULTIPLIER);
+		LaunchCharacter(JumpVector, false, true);
+		ParticleSystem->Activate();
+		bWasFalling = false;
+	}
 }
 
-void ABasePlayer::ExplodeMuffin(UParticleSystem* ParticleTemplate) {
+void ABasePlayer::ExplodeMuffin(UParticleSystem* ParticleTemplate) 
+{
 	float ZVelocity = GetVelocity().Z;
-	if (bWasFalling && (ZVelocity == 0)) {
+	if (bIsMortal && bWasFalling && (ZVelocity == 0)) {
+		SetActorHiddenInGame(true);
 		UGameplayStatics::SpawnEmitterAtLocation(
 			GetWorld(), 
 			ParticleTemplate,
@@ -73,10 +80,25 @@ void ABasePlayer::ExplodeMuffin(UParticleSystem* ParticleTemplate) {
 			EPSCPoolMethod::None,
 			true
 		);
+		bEnableControl = false;
 	}
 }
 
-void ABasePlayer::GlowFireOnJump() {
+void ABasePlayer::onOverlapBegin(
+	class UPrimitiveComponent* OverlappedComp,
+	class AActor* OtherActor,
+	class UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult& SweepResult
+) {
+	if (Cast<ABaseCloud>(OtherActor)) {
+		bIsMortal = true;
+	}
+}
+
+void ABasePlayer::GlowFireOnJump() 
+{
 	if (GetVelocity().Z > 0) {
 		ParticleSystem->Activate();
 	}
@@ -85,13 +107,15 @@ void ABasePlayer::GlowFireOnJump() {
 	}
 }
 
-void ABasePlayer::AttachFireToMuffin() {
+void ABasePlayer::AttachFireToMuffin() 
+{
 	FVector CapsuleLocation = GetCapsuleComponent()->GetComponentLocation();
 	CapsuleLocation.Z = CapsuleLocation.Z - 20;
 	ParticleSystem->SetWorldLocation(CapsuleLocation);
 }
 
-void ABasePlayer::RotatePlayer(int iScale) {
+void ABasePlayer::RotatePlayer(int iScale) 
+{
 	if (iOldScale != iScale) {
 		iOldScale = iScale;
 		int iRotationDegree = 180;
@@ -103,7 +127,8 @@ void ABasePlayer::RotatePlayer(int iScale) {
 	}
 }
 
-FRotator ABasePlayer::AddRotation(FRotator&& RotationOffset) {
+FRotator ABasePlayer::AddRotation(FRotator&& RotationOffset) 
+{
 	Rotation = Rotation + RotationOffset;
 	return Rotation;
 }
