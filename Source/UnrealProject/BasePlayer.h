@@ -9,6 +9,7 @@
 #include "UnrealGameInstance.h"
 #include "Constants.h"
 #include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystemComponent.h"
 
 #include "BasePlayer.generated.h"
 
@@ -32,6 +33,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+	UParticleSystemComponent* ParticleSystem;
 public:	
 
 	// Called every frame
@@ -42,4 +45,6 @@ public:
 
 	void MoveLeftRight(float scale);
 	void Jump();
+	void GlowFireOnJump();
+	void AttachFireToMuffin();
 };
