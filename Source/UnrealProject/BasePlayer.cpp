@@ -7,6 +7,7 @@ ABasePlayer::ABasePlayer()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	ParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>("Particle System");
+	bWasFalling = false;
 	bIsFirstInput = true;
 	iOldScale = 0;
 	Rotation = FRotator(0, 0, 0);
@@ -26,6 +27,10 @@ void ABasePlayer::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	GlowFireOnJump();
 	AttachFireToMuffin();
+
+	if ((GetVelocity().Z) < 0) {
+		bWasFalling = (GetVelocity().Z) < 0;
+	}
 }
 
 // Called to bind functionality to input
@@ -51,6 +56,24 @@ void ABasePlayer::Jump()
 	FVector JumpVector(0, 0, JUMP_MULTIPLIER);
 	LaunchCharacter(JumpVector,false,true);
 	ParticleSystem->Activate();
+
+	bWasFalling = false;
+}
+
+void ABasePlayer::ExplodeMuffin(UParticleSystem* ParticleTemplate) {
+	float ZVelocity = GetVelocity().Z;
+	if (bWasFalling && (ZVelocity == 0)) {
+		UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(), 
+			ParticleTemplate,
+			GetActorLocation(), 
+			FRotator(0,0,0), 
+			FVector(1,1,1), 
+			true, 
+			EPSCPoolMethod::None,
+			true
+		);
+	}
 }
 
 void ABasePlayer::GlowFireOnJump() {

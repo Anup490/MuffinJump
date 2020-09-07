@@ -18,23 +18,31 @@ class UNREALPROJECT_API ABasePlayer : public ACharacter
 {
 	GENERATED_BODY()
 
+	bool bWasFalling;
 	bool bIsFirstInput;
 	int iOldScale;
 	FRotator Rotation;
 	APlayerController* PlayerController;
 
+	void GlowFireOnJump();
+	void AttachFireToMuffin();
 	void RotatePlayer(int iScale);
 	FRotator AddRotation(FRotator&& RotationOffset);
+
 public:
 	// Sets default values for this pawn's properties
 	ABasePlayer();
 
 protected:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UParticleSystemComponent* ParticleSystem;
+
+	UFUNCTION(BlueprintCallable)
+	void ExplodeMuffin(UParticleSystem* ParticleTemplate);
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
-	UParticleSystemComponent* ParticleSystem;
 public:	
 
 	// Called every frame
@@ -45,6 +53,4 @@ public:
 
 	void MoveLeftRight(float scale);
 	void Jump();
-	void GlowFireOnJump();
-	void AttachFireToMuffin();
 };
