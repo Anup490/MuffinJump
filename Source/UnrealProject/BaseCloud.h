@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "GameFramework/Character.h"
 #include "Components/BoxComponent.h"
+#include "Components/AudioComponent.h"
 #include "Constants.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -28,6 +29,9 @@ protected:
 	void onOverlap(AActor* OtherActor, USoundBase* Sound);
 
 public:	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UAudioComponent* Audio;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* RainMesh;
 

@@ -9,6 +9,7 @@ ABaseCloud::ABaseCloud()
 	Box = CreateDefaultSubobject<UBoxComponent>("Box");
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
 	RainMesh = CreateDefaultSubobject<UStaticMeshComponent>("Rain");
+	Audio = CreateDefaultSubobject<UAudioComponent>("Audio");
 	StaticMesh->SetupAttachment(Box);
 	RainMesh->SetupAttachment(StaticMesh);
 	Box->SetGenerateOverlapEvents(true);
@@ -29,6 +30,7 @@ void ABaseCloud::Tick(float DeltaTime)
 
 void ABaseCloud::EnableRain() {
 	RainMesh->SetVisibility(true);
+	Audio->Activate();
 }
 
 void ABaseCloud::onOverlap(AActor* OtherActor, USoundBase* Sound) {
