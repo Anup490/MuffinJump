@@ -8,6 +8,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/AudioComponent.h"
 #include "Constants.h"
+#include "BaseCamera.h"
 #include "Kismet/GameplayStatics.h"
 
 #include "BaseCloud.generated.h"

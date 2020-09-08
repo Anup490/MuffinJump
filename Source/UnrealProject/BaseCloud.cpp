@@ -41,5 +41,8 @@ void ABaseCloud::onOverlap(AActor* OtherActor, USoundBase* Sound) {
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), Sound, GetActorLocation(), FRotator(0,0,0), 1, 1, 0, 0, 0, 0);
 		Destroy();
 	}
+	else if (Cast<ABaseCamera>(OtherActor)) {
+		Destroy();
+	}
 }
 
