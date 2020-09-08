@@ -28,13 +28,16 @@ protected:
 	void onOverlap(AActor* OtherActor, USoundBase* Sound);
 
 public:	
-	// Called every frame
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UStaticMeshComponent* RainMesh;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* StaticMesh;
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	UBoxComponent* Box;
 
+	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 };

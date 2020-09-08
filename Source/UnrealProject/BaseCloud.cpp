@@ -8,7 +8,9 @@ ABaseCloud::ABaseCloud()
 	PrimaryActorTick.bCanEverTick = true;
 	Box = CreateDefaultSubobject<UBoxComponent>("Box");
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
+	RainMesh = CreateDefaultSubobject<UStaticMeshComponent>("Rain");
 	StaticMesh->SetupAttachment(Box);
+	RainMesh->SetupAttachment(StaticMesh);
 	Box->SetGenerateOverlapEvents(true);
 }
 
