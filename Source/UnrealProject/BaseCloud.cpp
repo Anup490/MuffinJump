@@ -10,35 +10,26 @@ ABaseCloud::ABaseCloud()
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
 	StaticMesh->SetupAttachment(Box);
 	Box->SetGenerateOverlapEvents(true);
-	Box->OnComponentBeginOverlap.AddDynamic(this, &ABaseCloud::onOverlapBegin);
 }
 
 // Called when the game starts or when spawned
 void ABaseCloud::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
 void ABaseCloud::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
-void ABaseCloud::onOverlapBegin(
-	class UPrimitiveComponent* OverlappedComp,
-	class AActor* OtherActor,
-	class UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex,
-	bool bFromSweep,
-	const FHitResult& SweepResult
-) {
+void ABaseCloud::onOverlap(AActor* OtherActor, USoundBase* Sound) {
 	ACharacter* Player = Cast<ACharacter>(OtherActor);
 	if (Player != nullptr) {
 		FVector JumpVector(0, 0, JUMP_MULTIPLIER);
 		Player->LaunchCharacter(JumpVector, false, true);;
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), Sound, GetActorLocation(), FRotator(0,0,0), 1, 1, 0, 0, 0, 0);
 		Destroy();
 	}
 }
