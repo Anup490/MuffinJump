@@ -18,12 +18,17 @@ ABaseCloud::ABaseCloud()
 void ABaseCloud::BeginPlay()
 {
 	Super::BeginPlay();
+	RainMesh->SetVisibility(false);
 }
 
 // Called every frame
 void ABaseCloud::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void ABaseCloud::EnableRain() {
+	RainMesh->SetVisibility(true);
 }
 
 void ABaseCloud::onOverlap(AActor* OtherActor, USoundBase* Sound) {

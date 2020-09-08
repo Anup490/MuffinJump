@@ -16,8 +16,10 @@ class UNREALPROJECT_API ABaseCloudSpawner : public AActor
 	GENERATED_BODY()
 
 	void Spawn(UClass* pClazz);
+	bool ShouldRain();
 	float GetRandomY();
 	void MoveUpwards();
+
 public:	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	USceneComponent* Root;

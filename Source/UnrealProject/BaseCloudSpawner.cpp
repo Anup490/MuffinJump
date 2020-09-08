@@ -41,8 +41,15 @@ void ABaseCloudSpawner::Spawn(UClass* pClazz) {
 	LocationVector.Y = GetRandomY();
 	FRotator RotationVector(0.0f, 0.0f, 0.0f);
 	FActorSpawnParameters SpawnInfo;
-	GetWorld()->SpawnActor<ABaseCloud>(pClazz, LocationVector, RotationVector, SpawnInfo);
+	ABaseCloud* Cloud = GetWorld()->SpawnActor<ABaseCloud>(pClazz, LocationVector, RotationVector, SpawnInfo);
+	if (ShouldRain()) {
+		Cloud->EnableRain();
+	}
 	MoveUpwards();
+}
+
+bool ABaseCloudSpawner::ShouldRain() {
+	return FMath::RandRange(0,10) > 8;
 }
 
 float ABaseCloudSpawner::GetRandomY() {
