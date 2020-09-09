@@ -9,13 +9,12 @@ ABasePlayer::ABasePlayer()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	ParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>("Particle System");
-
 	bIsMenuHidden = true;
-
 	bIsMortal = false;
 	bWasFalling = false;
 	bIsFirstInput = true;
 	iOldScale = 0;
+	iScore = 0;
 	Rotation = FRotator(0, 0, 0);
 	PlayerController = UGameplayStatics::GetPlayerController(this, 0);
 }
@@ -88,6 +87,11 @@ void ABasePlayer::CreateAndShowUI(TSubclassOf<UUserWidget> UserWidgetClass) {
 	}
 }
 
+void ABasePlayer::CreateScoreUI(TSubclassOf<UUserWidget> UserWidgetClass) {
+	UUserWidget* Widget = CreateWidget<UUserWidget>(GetWorld(), UserWidgetClass);
+	Score = Cast<UBaseScoreWidget>(Widget);
+}
+
 void ABasePlayer::ShowUI() {
 	if (Menu) {
 		if (bShowMenu && bIsMenuHidden) {
@@ -95,12 +99,25 @@ void ABasePlayer::ShowUI() {
 			Menu->AddToViewport();
 			bIsMenuHidden = false;
 			UGameplayStatics::GetPlayerController(this, 0)->bShowMouseCursor = true;
+			ShowScoreUI(false);
 		}
 		else if ((!bShowMenu) && (!bIsMenuHidden)) {
 			Menu->RemoveFromViewport();
 			EnableAndShowMuffin(true);
 			bIsMenuHidden = true;
 			UGameplayStatics::GetPlayerController(this, 0)->bShowMouseCursor = false;
+			ShowScoreUI(true);
+		}
+	}
+}
+
+void ABasePlayer::ShowScoreUI(bool show) {
+	if (Score) {
+		if (show) {
+			Score->AddToViewport();
+		}
+		else {
+			Score->RemoveFromViewport();
 		}
 	}
 }
@@ -120,6 +137,9 @@ void ABasePlayer::ExplodeMuffin(UParticleSystem* ParticleTemplate)
 			true
 		);
 		bShowMenu = true;
+		if (Score) {
+			Score->ResetScore();
+		}
 	}
 }
 
@@ -133,6 +153,10 @@ void ABasePlayer::onOverlapBegin(
 ) {
 	if (Cast<ABaseCloud>(OtherActor)) {
 		bIsMortal = true;
+	}
+	if (Score) {
+		iScore++;
+		Score->SetScore(iScore);
 	}
 }
 

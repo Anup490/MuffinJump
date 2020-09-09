@@ -12,6 +12,7 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "BaseCloud.h"
 #include "BaseMenuWidget.h"
+#include "BaseScoreWidget.h"
 
 #include "BasePlayer.generated.h"
 
@@ -29,9 +30,11 @@ class UNREALPROJECT_API ABasePlayer : public ACharacter
 	bool bWasFalling;
 	bool bIsFirstInput;
 	int iOldScale;
+	int iScore;
 	FRotator Rotation;
 	APlayerController* PlayerController;
 	UBaseMenuWidget* Menu;
+	UBaseScoreWidget* Score;
 
 	void GlowFireOnJump();
 	void AttachFireToMuffin();
@@ -65,10 +68,13 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void CreateAndShowUI(TSubclassOf<UUserWidget> UserWidgetClass);
 
+	UFUNCTION(BlueprintCallable)
+	void CreateScoreUI(TSubclassOf<UUserWidget> UserWidgetClass);
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	void ShowUI();
-
+	void ShowScoreUI(bool show);
 public:	
 
 	// Called every frame
