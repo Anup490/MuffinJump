@@ -11,14 +11,19 @@
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "BaseCloud.h"
+#include "BaseMenuWidget.h"
 
 #include "BasePlayer.generated.h"
+
 
 UCLASS()
 class UNREALPROJECT_API ABasePlayer : public ACharacter
 {
 	GENERATED_BODY()
 
+	static bool bShowMenu;
+
+	bool bIsMenuHidden;
 	bool bEnableControl;
 	bool bIsMortal;
 	bool bWasFalling;
@@ -26,15 +31,18 @@ class UNREALPROJECT_API ABasePlayer : public ACharacter
 	int iOldScale;
 	FRotator Rotation;
 	APlayerController* PlayerController;
+	UBaseMenuWidget* Menu;
 
 	void GlowFireOnJump();
 	void AttachFireToMuffin();
 	void RotatePlayer(int iScale);
 	FRotator AddRotation(FRotator&& RotationOffset);
+	void EnableAndShowMuffin(bool showAndActivate);
 
 public:
 	// Sets default values for this pawn's properties
 	ABasePlayer();
+	static void onStartClick();
 
 protected:
 
@@ -54,8 +62,12 @@ protected:
 		const FHitResult& SweepResult
 	);	
 
+	UFUNCTION(BlueprintCallable)
+	void CreateAndShowUI(TSubclassOf<UUserWidget> UserWidgetClass);
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	void ShowUI();
 
 public:	
 
@@ -67,4 +79,5 @@ public:
 
 	void MoveLeftRight(float scale);
 	void Jump();
+	
 };

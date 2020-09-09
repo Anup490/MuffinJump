@@ -2,12 +2,16 @@
 #include "BasePlayer.h"
 
 // Sets default values
+bool ABasePlayer::bShowMenu = true;
+
 ABasePlayer::ABasePlayer()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	ParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>("Particle System");
-	bEnableControl = true;
+
+	bIsMenuHidden = true;
+
 	bIsMortal = false;
 	bWasFalling = false;
 	bIsFirstInput = true;
@@ -16,11 +20,20 @@ ABasePlayer::ABasePlayer()
 	PlayerController = UGameplayStatics::GetPlayerController(this, 0);
 }
 
+void ABasePlayer::onStartClick() {
+	bShowMenu = false;
+}
+
 // Called when the game starts or when spawned
 void ABasePlayer::BeginPlay()
 {
 	Super::BeginPlay();
 	UUnrealGameInstance::SaveBasePlayer(this);
+
+	FInputModeGameAndUI InputMode = FInputModeGameAndUI();
+	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
+	UGameplayStatics::GetPlayerController(this, 0)->SetInputMode(InputMode);
+
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ABasePlayer::onOverlapBegin);
 }
 
@@ -33,6 +46,7 @@ void ABasePlayer::Tick(float DeltaTime)
 	if ((GetVelocity().Z) < 0) {
 		bWasFalling = (GetVelocity().Z) < 0;
 	}
+	ShowUI();
 }
 
 // Called to bind functionality to input
@@ -65,11 +79,36 @@ void ABasePlayer::Jump()
 	}
 }
 
+void ABasePlayer::CreateAndShowUI(TSubclassOf<UUserWidget> UserWidgetClass) {
+	UUserWidget* Widget = CreateWidget<UUserWidget>(GetWorld(), UserWidgetClass);
+	Menu = Cast<UBaseMenuWidget>(Widget);
+	if (Menu) {
+		Menu->SetCallback(ABasePlayer::onStartClick);
+		ShowUI();
+	}
+}
+
+void ABasePlayer::ShowUI() {
+	if (Menu) {
+		if (bShowMenu && bIsMenuHidden) {
+			EnableAndShowMuffin(false);
+			Menu->AddToViewport();
+			bIsMenuHidden = false;
+			UGameplayStatics::GetPlayerController(this, 0)->bShowMouseCursor = true;
+		}
+		else if ((!bShowMenu) && (!bIsMenuHidden)) {
+			Menu->RemoveFromViewport();
+			EnableAndShowMuffin(true);
+			bIsMenuHidden = true;
+			UGameplayStatics::GetPlayerController(this, 0)->bShowMouseCursor = false;
+		}
+	}
+}
+
 void ABasePlayer::ExplodeMuffin(UParticleSystem* ParticleTemplate) 
 {
 	float ZVelocity = GetVelocity().Z;
 	if (bIsMortal && bWasFalling && (ZVelocity == 0)) {
-		SetActorHiddenInGame(true);
 		UGameplayStatics::SpawnEmitterAtLocation(
 			GetWorld(), 
 			ParticleTemplate,
@@ -80,7 +119,7 @@ void ABasePlayer::ExplodeMuffin(UParticleSystem* ParticleTemplate)
 			EPSCPoolMethod::None,
 			true
 		);
-		bEnableControl = false;
+		bShowMenu = true;
 	}
 }
 
@@ -131,4 +170,9 @@ FRotator ABasePlayer::AddRotation(FRotator&& RotationOffset)
 {
 	Rotation = Rotation + RotationOffset;
 	return Rotation;
+}
+
+void ABasePlayer::EnableAndShowMuffin(bool showAndActivate) {
+	bEnableControl = showAndActivate;
+	SetActorHiddenInGame(!showAndActivate);
 }
