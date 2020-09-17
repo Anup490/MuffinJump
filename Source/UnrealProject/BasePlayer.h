@@ -13,6 +13,7 @@
 #include "BaseCloud.h"
 #include "BaseMenuWidget.h"
 #include "BaseScoreWidget.h"
+#include "BaseCloudSpawner.h"
 
 #include "BasePlayer.generated.h"
 
@@ -75,6 +76,7 @@ protected:
 	virtual void BeginPlay() override;
 	void ShowUI();
 	void ShowScoreUI(bool show);
+	void ResetCloudSpawner();
 public:	
 
 	// Called every frame

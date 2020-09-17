@@ -16,12 +16,29 @@ ABaseCloudSpawner::ABaseCloudSpawner()
 void ABaseCloudSpawner::BeginPlay()
 {
 	Super::BeginPlay();
+	OgLocation = GetActorLocation();
+	OgLocation.Z -= 690;
 }
 
 // Called every frame
 void ABaseCloudSpawner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void ABaseCloudSpawner::OnReset() {
+	SetActorLocation(OgLocation);
+	TArray<AActor*> BaseClouds;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABaseCloud::StaticClass(), BaseClouds);
+	for (AActor* Actor : BaseClouds) {
+		ABaseCloud* Cloud = Cast<ABaseCloud>(Actor);
+		if (Cloud) {
+			Cloud->Destroy();
+		}
+	}
+	if (pCloud) {
+		SpawnCloud(pCloud);
+	}
 }
 
 void ABaseCloudSpawner::SpawnCloudOnPlayerOverlap(UClass* pClazz, AActor* Pawn) {
@@ -31,6 +48,9 @@ void ABaseCloudSpawner::SpawnCloudOnPlayerOverlap(UClass* pClazz, AActor* Pawn) 
 }
 
 void ABaseCloudSpawner::SpawnCloud(UClass* pClazz) {
+	if (pCloud == 0) {
+		pCloud = pClazz;
+	}
 	for (int i = 0; i < NUMBER_OF_CLOUDS_TO_SPAWN; i++) {
 		Spawn(pClazz);
 	}

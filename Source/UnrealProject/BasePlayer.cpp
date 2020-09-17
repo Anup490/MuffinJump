@@ -140,6 +140,19 @@ void ABasePlayer::ExplodeMuffin(UParticleSystem* ParticleTemplate)
 		if (Score) {
 			Score->ResetScore();
 		}
+		bIsMortal = false;
+		ResetCloudSpawner();
+	}
+}
+
+void ABasePlayer::ResetCloudSpawner() {
+	TArray<AActor*> CloudSpawners;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABaseCloudSpawner::StaticClass(), CloudSpawners);
+	for (AActor* Actor : CloudSpawners) {
+		ABaseCloudSpawner* CloudSpawner = Cast<ABaseCloudSpawner>(Actor);
+		if (CloudSpawner) {
+			CloudSpawner->OnReset();
+		}
 	}
 }
 

@@ -15,6 +15,9 @@ class UNREALPROJECT_API ABaseCloudSpawner : public AActor
 {
 	GENERATED_BODY()
 
+	FVector OgLocation;
+
+	UClass* pCloud = 0;
 	void Spawn(UClass* pClazz);
 	bool ShouldRain();
 	float GetRandomY();
@@ -48,5 +51,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	void OnReset();
 
 };
