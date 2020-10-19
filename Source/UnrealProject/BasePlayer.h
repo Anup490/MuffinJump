@@ -22,8 +22,6 @@ class UNREALPROJECT_API ABasePlayer : public ACharacter
 	int iScore;
 	FRotator Rotation;
 	APlayerController* PlayerController;
-	class UBaseMenuWidget* Menu;
-	class UBaseScoreWidget* Score;
 
 	void GlowFireOnJump();
 	void AttachFireToMuffin();
@@ -37,7 +35,6 @@ public:
 	static void onStartClick();
 
 protected:
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	class UParticleSystemComponent* ParticleSystem;
 
@@ -55,15 +52,24 @@ protected:
 	);	
 
 	UFUNCTION(BlueprintCallable)
-	void CreateAndShowUI(TSubclassOf<UUserWidget> UserWidgetClass);
+	void RegisterCallbackAndShowUI(class UBaseMenuWidget* Menu);
 
-	UFUNCTION(BlueprintCallable)
-	void CreateScoreUI(TSubclassOf<UUserWidget> UserWidgetClass);
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShowMenu(bool show);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShowScoreUI(bool show);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void ResetScore();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetScore(int iValue);
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
 	void ShowUI();
-	void ShowScoreUI(bool show);
 	void ResetCloudSpawner();
 public:	
 

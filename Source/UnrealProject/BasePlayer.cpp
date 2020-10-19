@@ -92,58 +92,38 @@ void ABasePlayer::Jump()
 	}
 }
 
-void ABasePlayer::CreateAndShowUI(TSubclassOf<UUserWidget> UserWidgetClass) 
+void ABasePlayer::RegisterCallbackAndShowUI(class UBaseMenuWidget* Menu)
 {
-	UUserWidget* Widget = CreateWidget<UUserWidget>(GetWorld(), UserWidgetClass);
-	Menu = Cast<UBaseMenuWidget>(Widget);
-	if (Menu) 
+	if (Menu)
 	{
 		Menu->SetCallback(ABasePlayer::onStartClick);
 		ShowUI();
 	}
 }
 
-void ABasePlayer::CreateScoreUI(TSubclassOf<UUserWidget> UserWidgetClass) 
-{
-	UUserWidget* Widget = CreateWidget<UUserWidget>(GetWorld(), UserWidgetClass);
-	Score = Cast<UBaseScoreWidget>(Widget);
-}
-
 void ABasePlayer::ShowUI() 
 {
-	if (Menu) 
+	if (bShowMenu && bIsMenuHidden)
 	{
-		if (bShowMenu && bIsMenuHidden) 
+		EnableAndShowMuffin(false);
+		ShowMenu(true);
+		bIsMenuHidden = false;
+		if (PlayerController)
 		{
-			EnableAndShowMuffin(false);
-			Menu->AddToViewport();
-			bIsMenuHidden = false;
-			UGameplayStatics::GetPlayerController(this, 0)->bShowMouseCursor = true;
-			ShowScoreUI(false);
+			PlayerController->bShowMouseCursor = true;
 		}
-		else if ((!bShowMenu) && (!bIsMenuHidden)) 
-		{
-			Menu->RemoveFromViewport();
-			EnableAndShowMuffin(true);
-			bIsMenuHidden = true;
-			UGameplayStatics::GetPlayerController(this, 0)->bShowMouseCursor = false;
-			ShowScoreUI(true);
-		}
+		ShowScoreUI(false);
 	}
-}
-
-void ABasePlayer::ShowScoreUI(bool show) 
-{
-	if (Score) 
+	else if ((!bShowMenu) && (!bIsMenuHidden))
 	{
-		if (show) 
+		ShowMenu(false);
+		EnableAndShowMuffin(true);
+		bIsMenuHidden = true;
+		if (PlayerController)
 		{
-			Score->AddToViewport();
+			PlayerController->bShowMouseCursor = false;
 		}
-		else 
-		{
-			Score->RemoveFromViewport();
-		}
+		ShowScoreUI(true);
 	}
 }
 
@@ -152,7 +132,8 @@ void ABasePlayer::ExplodeMuffin(UParticleSystem* ParticleTemplate)
 	float ZVelocity = GetVelocity().Z;
 	if (bIsMortal && bWasFalling && (ZVelocity == 0)) 
 	{
-		UGameplayStatics::SpawnEmitterAtLocation(
+		UGameplayStatics::SpawnEmitterAtLocation
+		(
 			GetWorld(), 
 			ParticleTemplate,
 			GetActorLocation(), 
@@ -163,11 +144,8 @@ void ABasePlayer::ExplodeMuffin(UParticleSystem* ParticleTemplate)
 			true
 		);
 		bShowMenu = true;
-		if (Score) 
-		{
-			Score->ResetScore();
-			iScore = 0;
-		}
+		iScore = 0;
+		ResetScore();
 		bIsMortal = false;
 		ResetCloudSpawner();
 	}
@@ -187,7 +165,8 @@ void ABasePlayer::ResetCloudSpawner()
 	}
 }
 
-void ABasePlayer::onOverlapBegin(
+void ABasePlayer::onOverlapBegin
+(
 	class UPrimitiveComponent* OverlappedComp,
 	class AActor* OtherActor,
 	class UPrimitiveComponent* OtherComp,
@@ -199,11 +178,7 @@ void ABasePlayer::onOverlapBegin(
 	if (Cast<ABaseCloud>(OtherActor)) 
 	{
 		bIsMortal = true;
-		if (Score)
-		{
-			iScore++;
-			Score->SetScore(iScore);
-		}
+		SetScore(++iScore);
 	}
 }
 

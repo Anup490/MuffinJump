@@ -18,6 +18,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void SetScoreTextBlock(UTextBlock* TextBlock);
 public:
+	UFUNCTION(BlueprintCallable)
 	void ResetScore();
+
+	UFUNCTION(BlueprintCallable)
 	void SetScore(int score);
 };
