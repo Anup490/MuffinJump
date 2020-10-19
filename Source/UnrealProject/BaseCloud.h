@@ -4,13 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "GameFramework/Character.h"
-#include "Components/BoxComponent.h"
-#include "Components/AudioComponent.h"
-#include "Constants.h"
-#include "BaseCamera.h"
-#include "Kismet/GameplayStatics.h"
-
 #include "BaseCloud.generated.h"
 
 UCLASS()
@@ -31,16 +24,16 @@ protected:
 
 public:	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	UAudioComponent* Audio;
+	class UAudioComponent* Audio;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UStaticMeshComponent* RainMesh;
+	class UStaticMeshComponent* RainMesh;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UStaticMeshComponent* StaticMesh;
+	class UStaticMeshComponent* StaticMesh;
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
-	UBoxComponent* Box;
+	class UBoxComponent* Box;
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

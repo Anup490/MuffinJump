@@ -1,7 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "BaseCamera.h"
+#include "Camera/CameraComponent.h"
+#include "Components/BoxComponent.h"
+#include "Engine/LocalPlayer.h"
+#include "Kismet/GameplayStatics.h"
+#include "UnrealGameInstance.h"
 
 // Sets default values
 ABaseCamera::ABaseCamera()
@@ -26,7 +29,8 @@ void ABaseCamera::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	AActor* pBasePlayer = UUnrealGameInstance::GetBasePlayer();
-	if (pBasePlayer != nullptr) {
+	if (pBasePlayer != nullptr) 
+	{
 		float fPawnZ = pBasePlayer->GetActorLocation().Z;
 		float fCameraZ = GetActorLocation().Z;
 		FVector CameraVector = FVector(0, 0, 1) * (fPawnZ - fCameraZ);

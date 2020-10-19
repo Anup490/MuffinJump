@@ -1,20 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "GameFramework/FloatingPawnMovement.h"
-#include "Components/CapsuleComponent.h"
-#include "UnrealGameInstance.h"
-#include "Constants.h"
-#include "Kismet/GameplayStatics.h"
-#include "Particles/ParticleSystemComponent.h"
-#include "BaseCloud.h"
-#include "BaseMenuWidget.h"
-#include "BaseScoreWidget.h"
-#include "BaseCloudSpawner.h"
-
 #include "BasePlayer.generated.h"
 
 
@@ -34,8 +22,8 @@ class UNREALPROJECT_API ABasePlayer : public ACharacter
 	int iScore;
 	FRotator Rotation;
 	APlayerController* PlayerController;
-	UBaseMenuWidget* Menu;
-	UBaseScoreWidget* Score;
+	class UBaseMenuWidget* Menu;
+	class UBaseScoreWidget* Score;
 
 	void GlowFireOnJump();
 	void AttachFireToMuffin();
@@ -51,10 +39,10 @@ public:
 protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	UParticleSystemComponent* ParticleSystem;
+	class UParticleSystemComponent* ParticleSystem;
 
 	UFUNCTION(BlueprintCallable)
-	void ExplodeMuffin(UParticleSystem* ParticleTemplate);
+	void ExplodeMuffin(class UParticleSystem* ParticleTemplate);
 
 	UFUNCTION()
 	void onOverlapBegin(
@@ -87,5 +75,4 @@ public:
 
 	void MoveLeftRight(float scale);
 	void Jump();
-	
 };

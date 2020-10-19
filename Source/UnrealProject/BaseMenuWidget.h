@@ -4,8 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Kismet/GameplayStatics.h"
-
 #include "BaseMenuWidget.generated.h"
 
 /**
@@ -15,9 +13,7 @@ UCLASS()
 class UNREALPROJECT_API UBaseMenuWidget : public UUserWidget
 {
 	GENERATED_BODY()
-
 	void (*fpOnStart) (void);
-
 protected:
 	UFUNCTION(BlueprintCallable)
 	void OnStart();

@@ -1,5 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "BasePlayer.h"
+#include "UnrealGameInstance.h"
+#include "Constants.h"
+#include "Kismet/GameplayStatics.h"
+#include "Components/CapsuleComponent.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "BaseCloud.h"
+#include "BaseMenuWidget.h"
+#include "BaseScoreWidget.h"
+#include "BaseCloudSpawner.h"
 
 // Sets default values
 bool ABasePlayer::bShowMenu = true;
@@ -19,7 +28,8 @@ ABasePlayer::ABasePlayer()
 	PlayerController = UGameplayStatics::GetPlayerController(this, 0);
 }
 
-void ABasePlayer::onStartClick() {
+void ABasePlayer::onStartClick() 
+{
 	bShowMenu = false;
 }
 
@@ -42,7 +52,8 @@ void ABasePlayer::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	GlowFireOnJump();
 	AttachFireToMuffin();
-	if ((GetVelocity().Z) < 0) {
+	if ((GetVelocity().Z) < 0) 
+	{
 		bWasFalling = (GetVelocity().Z) < 0;
 	}
 	ShowUI();
@@ -58,9 +69,11 @@ void ABasePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void ABasePlayer::MoveLeftRight(float scale)
 {
-	if (bEnableControl) {
+	if (bEnableControl) 
+	{
 		int iScale = (int)scale;
-		if (iScale != 0) {
+		if (iScale != 0) 
+		{
 			RotatePlayer(iScale);
 			FVector MovementVector(0, MOVEMENT_MULTIPLIER, 0);
 			AddMovementInput(MovementVector, scale, false);
@@ -70,7 +83,8 @@ void ABasePlayer::MoveLeftRight(float scale)
 
 void ABasePlayer::Jump() 
 {
-	if (bEnableControl) {
+	if (bEnableControl) 
+	{
 		FVector JumpVector(0, 0, JUMP_MULTIPLIER);
 		LaunchCharacter(JumpVector, false, true);
 		ParticleSystem->Activate();
@@ -78,30 +92,37 @@ void ABasePlayer::Jump()
 	}
 }
 
-void ABasePlayer::CreateAndShowUI(TSubclassOf<UUserWidget> UserWidgetClass) {
+void ABasePlayer::CreateAndShowUI(TSubclassOf<UUserWidget> UserWidgetClass) 
+{
 	UUserWidget* Widget = CreateWidget<UUserWidget>(GetWorld(), UserWidgetClass);
 	Menu = Cast<UBaseMenuWidget>(Widget);
-	if (Menu) {
+	if (Menu) 
+	{
 		Menu->SetCallback(ABasePlayer::onStartClick);
 		ShowUI();
 	}
 }
 
-void ABasePlayer::CreateScoreUI(TSubclassOf<UUserWidget> UserWidgetClass) {
+void ABasePlayer::CreateScoreUI(TSubclassOf<UUserWidget> UserWidgetClass) 
+{
 	UUserWidget* Widget = CreateWidget<UUserWidget>(GetWorld(), UserWidgetClass);
 	Score = Cast<UBaseScoreWidget>(Widget);
 }
 
-void ABasePlayer::ShowUI() {
-	if (Menu) {
-		if (bShowMenu && bIsMenuHidden) {
+void ABasePlayer::ShowUI() 
+{
+	if (Menu) 
+	{
+		if (bShowMenu && bIsMenuHidden) 
+		{
 			EnableAndShowMuffin(false);
 			Menu->AddToViewport();
 			bIsMenuHidden = false;
 			UGameplayStatics::GetPlayerController(this, 0)->bShowMouseCursor = true;
 			ShowScoreUI(false);
 		}
-		else if ((!bShowMenu) && (!bIsMenuHidden)) {
+		else if ((!bShowMenu) && (!bIsMenuHidden)) 
+		{
 			Menu->RemoveFromViewport();
 			EnableAndShowMuffin(true);
 			bIsMenuHidden = true;
@@ -111,12 +132,16 @@ void ABasePlayer::ShowUI() {
 	}
 }
 
-void ABasePlayer::ShowScoreUI(bool show) {
-	if (Score) {
-		if (show) {
+void ABasePlayer::ShowScoreUI(bool show) 
+{
+	if (Score) 
+	{
+		if (show) 
+		{
 			Score->AddToViewport();
 		}
-		else {
+		else 
+		{
 			Score->RemoveFromViewport();
 		}
 	}
@@ -125,7 +150,8 @@ void ABasePlayer::ShowScoreUI(bool show) {
 void ABasePlayer::ExplodeMuffin(UParticleSystem* ParticleTemplate) 
 {
 	float ZVelocity = GetVelocity().Z;
-	if (bIsMortal && bWasFalling && (ZVelocity == 0)) {
+	if (bIsMortal && bWasFalling && (ZVelocity == 0)) 
+	{
 		UGameplayStatics::SpawnEmitterAtLocation(
 			GetWorld(), 
 			ParticleTemplate,
@@ -137,20 +163,25 @@ void ABasePlayer::ExplodeMuffin(UParticleSystem* ParticleTemplate)
 			true
 		);
 		bShowMenu = true;
-		if (Score) {
+		if (Score) 
+		{
 			Score->ResetScore();
+			iScore = 0;
 		}
 		bIsMortal = false;
 		ResetCloudSpawner();
 	}
 }
 
-void ABasePlayer::ResetCloudSpawner() {
+void ABasePlayer::ResetCloudSpawner() 
+{
 	TArray<AActor*> CloudSpawners;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABaseCloudSpawner::StaticClass(), CloudSpawners);
-	for (AActor* Actor : CloudSpawners) {
+	for (AActor* Actor : CloudSpawners) 
+	{
 		ABaseCloudSpawner* CloudSpawner = Cast<ABaseCloudSpawner>(Actor);
-		if (CloudSpawner) {
+		if (CloudSpawner) 
+		{
 			CloudSpawner->OnReset();
 		}
 	}
@@ -163,22 +194,27 @@ void ABasePlayer::onOverlapBegin(
 	int32 OtherBodyIndex,
 	bool bFromSweep,
 	const FHitResult& SweepResult
-) {
-	if (Cast<ABaseCloud>(OtherActor)) {
+) 
+{
+	if (Cast<ABaseCloud>(OtherActor)) 
+	{
 		bIsMortal = true;
-	}
-	if (Score) {
-		iScore++;
-		Score->SetScore(iScore);
+		if (Score)
+		{
+			iScore++;
+			Score->SetScore(iScore);
+		}
 	}
 }
 
 void ABasePlayer::GlowFireOnJump() 
 {
-	if (GetVelocity().Z > 0) {
+	if (GetVelocity().Z > 0) 
+	{
 		ParticleSystem->Activate();
 	}
-	else {
+	else 
+	{
 		ParticleSystem->Deactivate();
 	}
 }
@@ -192,10 +228,12 @@ void ABasePlayer::AttachFireToMuffin()
 
 void ABasePlayer::RotatePlayer(int iScale) 
 {
-	if (iOldScale != iScale) {
+	if (iOldScale != iScale) 
+	{
 		iOldScale = iScale;
 		int iRotationDegree = 180;
-		if (bIsFirstInput) {
+		if (bIsFirstInput) 
+		{
 			iRotationDegree = (iScale > 0) ? 360 : 180;
 			bIsFirstInput = false;
 		}
@@ -209,7 +247,8 @@ FRotator ABasePlayer::AddRotation(FRotator&& RotationOffset)
 	return Rotation;
 }
 
-void ABasePlayer::EnableAndShowMuffin(bool showAndActivate) {
+void ABasePlayer::EnableAndShowMuffin(bool showAndActivate) 
+{
 	bEnableControl = showAndActivate;
 	SetActorHiddenInGame(!showAndActivate);
 }
