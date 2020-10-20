@@ -1,7 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "BaseCamera.h"
+#include "Camera/CameraComponent.h"
+#include "Components/BoxComponent.h"
+#include "Engine/LocalPlayer.h"
+#include "Kismet/GameplayStatics.h"
+#include "UnrealGameInstance.h"
 
 // Sets default values
 ABaseCamera::ABaseCamera()
@@ -9,6 +12,8 @@ ABaseCamera::ABaseCamera()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	Camera = CreateDefaultSubobject<UCameraComponent>("Camera");
+	Box = CreateDefaultSubobject<UBoxComponent>("Box");
+	Box->SetupAttachment(Camera);
 }
 
 // Called when the game starts or when spawned
@@ -23,6 +28,13 @@ void ABaseCamera::BeginPlay()
 void ABaseCamera::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	AActor* pBasePlayer = UUnrealGameInstance::GetBasePlayer();
+	if (pBasePlayer != nullptr) 
+	{
+		float fPawnZ = pBasePlayer->GetActorLocation().Z;
+		float fCameraZ = GetActorLocation().Z;
+		FVector CameraVector = FVector(0, 0, 1) * (fPawnZ - fCameraZ);
+		AddActorLocalOffset(CameraVector);
+	}
 }
 

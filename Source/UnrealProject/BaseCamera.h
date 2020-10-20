@@ -4,10 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Camera/CameraComponent.h"
-#include "Engine/LocalPlayer.h"
-#include "Kismet/GameplayStatics.h"
-
 #include "BaseCamera.generated.h"
 
 UCLASS()
@@ -26,7 +22,10 @@ protected:
 public:	
 
 	UPROPERTY(VisibleAnywhere)
-	UCameraComponent* Camera;
+	class UCameraComponent* Camera;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	class UBoxComponent* Box;
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
