@@ -44,6 +44,13 @@ void ABasePlayer::BeginPlay()
 	UGameplayStatics::GetPlayerController(this, 0)->SetInputMode(InputMode);
 
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ABasePlayer::onOverlapBegin);
+
+	bIsMenuHidden = true;
+	bShowMenu = true;
+	if (PlayerController)
+	{
+		PlayerController->bShowMouseCursor = true;
+	}
 }
 
 // Called every frame
