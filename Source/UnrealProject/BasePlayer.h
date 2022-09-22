@@ -23,8 +23,6 @@ class UNREALPROJECT_API ABasePlayer : public ACharacter
 	FRotator Rotation;
 	APlayerController* PlayerController;
 
-	void GlowFireOnJump();
-	void AttachFireToMuffin();
 	void RotatePlayer(int iScale);
 	FRotator AddRotation(FRotator&& RotationOffset);
 	void EnableAndShowMuffin(bool showAndActivate);
@@ -35,11 +33,11 @@ public:
 	static void onStartClick();
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	class UParticleSystemComponent* ParticleSystem;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UNiagaraSystem* NiagaraExplode;
 
 	UFUNCTION(BlueprintCallable)
-	void ExplodeMuffin(class UParticleSystem* ParticleTemplate);
+	void ExplodeMuffin();
 
 	UFUNCTION()
 	void onOverlapBegin(
@@ -65,6 +63,9 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void SetScore(int iValue);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShowFire(bool bShow);
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
