@@ -4,11 +4,12 @@
 #include "Constants.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
-#include "Particles/ParticleSystemComponent.h"
 #include "BaseCloud.h"
 #include "BaseMenuWidget.h"
 #include "BaseScoreWidget.h"
 #include "BaseCloudSpawner.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 
 // Sets default values
 bool ABasePlayer::bShowMenu = true;
@@ -17,7 +18,6 @@ ABasePlayer::ABasePlayer()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	ParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>("Particle System");
 	bIsMenuHidden = true;
 	bIsMortal = false;
 	bWasFalling = false;
@@ -44,7 +44,6 @@ void ABasePlayer::BeginPlay()
 	UGameplayStatics::GetPlayerController(this, 0)->SetInputMode(InputMode);
 
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ABasePlayer::onOverlapBegin);
-
 	bIsMenuHidden = true;
 	bShowMenu = true;
 	if (PlayerController)
@@ -57,13 +56,12 @@ void ABasePlayer::BeginPlay()
 void ABasePlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	GlowFireOnJump();
-	AttachFireToMuffin();
 	if ((GetVelocity().Z) < 0) 
 	{
 		bWasFalling = (GetVelocity().Z) < 0;
 	}
 	ShowUI();
+	ShowFire(!bWasFalling);
 }
 
 // Called to bind functionality to input
@@ -94,7 +92,6 @@ void ABasePlayer::Jump()
 	{
 		FVector JumpVector(0, 0, JUMP_MULTIPLIER);
 		LaunchCharacter(JumpVector, false, true);
-		ParticleSystem->Activate();
 		bWasFalling = false;
 	}
 }
@@ -134,22 +131,12 @@ void ABasePlayer::ShowUI()
 	}
 }
 
-void ABasePlayer::ExplodeMuffin(UParticleSystem* ParticleTemplate) 
+void ABasePlayer::ExplodeMuffin() 
 {
 	float ZVelocity = GetVelocity().Z;
 	if (bIsMortal && bWasFalling && (ZVelocity == 0)) 
 	{
-		UGameplayStatics::SpawnEmitterAtLocation
-		(
-			GetWorld(), 
-			ParticleTemplate,
-			GetActorLocation(), 
-			FRotator(0,0,0), 
-			FVector(1,1,1), 
-			true, 
-			EPSCPoolMethod::None,
-			true
-		);
+		UNiagaraFunctionLibrary::SpawnSystemAttached(NiagaraExplode, GetMesh(), NAME_None, FVector(0.f), FRotator(0.f), EAttachLocation::Type::KeepRelativeOffset, true);
 		bShowMenu = true;
 		iScore = 0;
 		ResetScore();
@@ -189,25 +176,6 @@ void ABasePlayer::onOverlapBegin
 	}
 }
 
-void ABasePlayer::GlowFireOnJump() 
-{
-	if (GetVelocity().Z > 0) 
-	{
-		ParticleSystem->Activate();
-	}
-	else 
-	{
-		ParticleSystem->Deactivate();
-	}
-}
-
-void ABasePlayer::AttachFireToMuffin() 
-{
-	FVector CapsuleLocation = GetCapsuleComponent()->GetComponentLocation();
-	CapsuleLocation.Z = CapsuleLocation.Z - 20;
-	ParticleSystem->SetWorldLocation(CapsuleLocation);
-}
-
 void ABasePlayer::RotatePlayer(int iScale) 
 {
 	if (iOldScale != iScale) 
@@ -232,5 +200,5 @@ FRotator ABasePlayer::AddRotation(FRotator&& RotationOffset)
 void ABasePlayer::EnableAndShowMuffin(bool showAndActivate) 
 {
 	bEnableControl = showAndActivate;
-	SetActorHiddenInGame(!showAndActivate);
+	GetMesh()->SetVisibility(showAndActivate);
 }
